@@ -45,23 +45,26 @@ vlassifier_model = joblib.load('RandomForest_model.pkl')
 
 # Generating and Displaying Predictions
 def classify_news(fmodel,cmodel, news):
+
     #tfidf 
     transformer = TfidfTransformer()
-    tfidf = transformer.fit_transform(loaded_vec.fit_transform(np.array(list(news))))
+    tfidf = transformer.fit_transform(loaded_vec.fit_transform(np.array(list(preprocessor(news)))))
     #rf classifiation
     label = vlassifier_model.predict(tfidf)[0]
-    if label == 1:
+    return {'label': label}
+'''    if label == 1:
         prediction = 'Real'
     elif label == 0:
-        prediction = 'Fake'
+        prediction = 'Fake' 
         
-    return {'label': prediction}
-
+    return {'label': prediction}'''
     
 # output the model’s predictions as a dictionary
 if news_text != '':
-
-	#result = preprocessor(news_text)
+    #result = preprocessor(news_text)    
     result = classify_news(loaded_vec,vlassifier_model, news_text)
-    
+
     st.write(result)
+
+    #result = vectorize_news(loaded_vec,news_text)
+
