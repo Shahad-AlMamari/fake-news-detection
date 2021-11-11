@@ -29,40 +29,41 @@ news_text = st.text_area("Enter text for prediction")
 
 # pre-processing
 def preprocessor(text):
+
     ps = PorterStemmer()
     corpus = []
 
-    text = re.sub('[^a-zA-Z]', ' ', text)
-    text = text.lower()
-    text = text.split()
+    review = re.sub('[^a-zA-Z]', ' ', text)
+    review = review.lower()
+    review = review.split()
 
-    text = [ps.stem(word) for word in text if not word in stopwords.words('english')]
-    text = ' '.join(text)
-    corpus.append(text)
+    review = [ps.stem(word) for word in review if not word in stopwords.words('english')]
+    review = ' '.join(review)
+    corpus.append(review)
     return corpus
 
 # Loading the Models    
-vlassifier_model = joblib.load('RF_model.pkl')
+classifier_model = joblib.load('RF_model.pkl')
 
 # Generating and Displaying Predictions
 def classify_news(cmodel, news):
 
-    #tfidf 
+    #tfidf     
     vectorizer = TfidfVectorizer(max_features=5000, ngram_range=(1,3),vocabulary=joblib.load(open("tfidf_features.pkl","rb")))
     tfidf = vectorizer.fit_transform(preprocessor(news))
     #rf classifiation
-    label = vlassifier_model.predict(tfidf)[0]
+    label = classifier_model.predict(tfidf)[0]
     if label == 1:
         prediction = 'Real'
     elif label == 0:
         prediction = 'Fake' 
         
-    return {'label': prediction}
+    return {'label': label}
     
 # output the model’s predictions as a dictionary
 if news_text != '':
     #result = preprocessor(news_text)    
-    result = classify_news(vlassifier_model, news_text)
+    result = classify_news(classifier_model, news_text)
 
     st.write(result)
 
